@@ -1,5 +1,6 @@
 require('dotenv').config();
 var request = require('request');
+var fs = require('fs');
 
 function getOptionsForRepo(person, repo){
   return {
@@ -26,17 +27,45 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
     const data = JSON.parse(body);
 
-    data.forEach((contributor) => {
-      console.log(contributor.login, contributor.avatar_url);
+    let contributorName = [];
+    let contributorUrl = [];
+
+    data.forEach(contributor => {
+      contributorName.push(contributor.login);
+      contributorUrl.push(contributor.avatar_url);
     });
 
-    return data;
+    cb(contributorName, contributorUrl);
+
   });
+}
+
+
+getRepoContributors("jquery", "jquery", function (name, url) {
+  for (let i = 0; i < name.length; i++) {
+  downloadImageByURL(url[i], `./avatars/${name[i]}.png`);
+  }
+});
+
+
+function downloadImageByURL(url, filePath) {
+
+if (!fs.existsSync('./avatars')){
+    fs.mkdirSync('./avatars');
+  }
+
+request.get(url)
+       .on('error', function (err) {
+         throw err;
+       })
+       .on('response', function (response) {
+         console.log('Response Status Code: ', response.statusCode);
+       })
+       .on('end', () => {
+          console.log('Download Completed.')
+       })
+       .pipe(fs.createWriteStream(filePath));
 
 }
 
 
-getRepoContributors("jquery", "jquery", function (err, result) {
-  console.log("Errors:", err);
-  console.log("Result:", result);
-});
