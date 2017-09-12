@@ -40,32 +40,32 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 }
 
-
-getRepoContributors("jquery", "jquery", function (name, url) {
-  for (let i = 0; i < name.length; i++) {
-  downloadImageByURL(url[i], `./avatars/${name[i]}.png`);
-  }
-});
-
-
 function downloadImageByURL(url, filePath) {
 
-if (!fs.existsSync('./avatars')){
+  if (!fs.existsSync('./avatars')){
     fs.mkdirSync('./avatars');
   }
 
-request.get(url)
-       .on('error', function (err) {
-         throw err;
-       })
-       .on('response', function (response) {
-         console.log('Response Status Code: ', response.statusCode);
-       })
-       .on('end', () => {
-          console.log('Download Completed.')
-       })
-       .pipe(fs.createWriteStream(filePath));
+  request.get(url)
+    .on('error', function (err) {
+      throw err;
+    })
+    .on('response', function (response) {
+      console.log('Response Status Code: ', response.statusCode);
+    })
+    .on('end', () => {
+      console.log('Download Completed.');
+    })
+    .pipe(fs.createWriteStream(filePath));
 
 }
+
+
+getRepoContributors(process.argv[2], process.argv[3], function (name, url) {
+  for (let i = 0; i < name.length; i++) {
+    downloadImageByURL(url[i], `./avatars/${name[i]}.png`);
+  }
+});
+
 
 
