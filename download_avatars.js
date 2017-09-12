@@ -17,6 +17,11 @@ function getOptionsForRepo(person, repo){
 
 function getRepoContributors(repoOwner, repoName, cb) {
 
+  if (!repoOwner || !repoName){
+    console.log('Need to enter repository owner and name as arguments.');
+    return;
+  }
+
   const options = getOptionsForRepo(repoOwner, repoName);
 
   request(options, function (error, response, body) {
@@ -62,6 +67,7 @@ function downloadImageByURL(url, filePath) {
 
 
 getRepoContributors(process.argv[2], process.argv[3], function (name, url) {
+
   for (let i = 0; i < name.length; i++) {
     downloadImageByURL(url[i], `./avatars/${name[i]}.png`);
   }
